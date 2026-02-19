@@ -315,7 +315,7 @@ def main():
 
     cookies_list = get_all_cookies()
     if not cookies_list:
-        print("错误: 请设置 ZAIMANHUA_COOKIE 环境变量（支持单个 Cookie 或字符串列表）")
+        print("错误: 请设置 ZAIMANHUA_COOKIE 环境变量（多账号按回车分隔，每行一个）")
         return False
 
     all_success = True

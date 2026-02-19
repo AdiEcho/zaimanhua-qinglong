@@ -119,9 +119,7 @@ def _parse_cookie_entries(raw_value):
 
     支持格式：
     1. 单个 Cookie 字符串
-    2. JSON 字符串列表，例如:
-       ["cookie_a", "cookie_b"]
-    3. 按行分隔的多条 Cookie
+    2. 按回车分隔的多条 Cookie
     """
     if not raw_value:
         return []
@@ -130,24 +128,9 @@ def _parse_cookie_entries(raw_value):
     if not value:
         return []
 
-    # 优先尝试 JSON 解析（推荐格式）
-    try:
-        parsed = json.loads(value)
-        if isinstance(parsed, list):
-            return [item.strip() for item in parsed if isinstance(item, str) and item.strip()]
-        if isinstance(parsed, str) and parsed.strip():
-            return [parsed.strip()]
-    except Exception:
-        pass
-
-    # 兼容按行分隔
-    if '\n' in value or '\r' in value:
-        items = [line.strip() for line in value.splitlines() if line.strip()]
-        if items:
-            return items
-
-    # 回退：按单个 Cookie 处理
-    return [value]
+    # 兼容实际换行和字面量 \n
+    normalized = value.replace('\\r\\n', '\n').replace('\\n', '\n')
+    return [line.strip() for line in normalized.splitlines() if line.strip()]
 
 
 def validate_cookie(cookie_str):
@@ -173,8 +156,7 @@ def get_all_cookies():
 
     使用 ZAIMANHUA_COOKIE：
     - 单个 Cookie 字符串
-    - JSON 字符串列表
-    - 按行分隔的多条 Cookie
+    - 按回车分隔的多条 Cookie
     """
     load_dotenv()  # 自动加载 .env 文件（本地测试用）
 

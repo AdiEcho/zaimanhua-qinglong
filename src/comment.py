@@ -345,7 +345,7 @@ def main():
 
     if not cookies_list:
         print("Error: 未配置任何账号 Cookie")
-        print("请设置 ZAIMANHUA_COOKIE 环境变量（支持单个 Cookie 或字符串列表）")
+        print("请设置 ZAIMANHUA_COOKIE 环境变量（多账号按回车分隔，每行一个）")
         return False
 
     print(f"共发现 {len(cookies_list)} 个账号")

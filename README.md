@@ -86,7 +86,7 @@
 1. 打开青龙面板
 2. 进入 **环境变量**
 3. 新建变量：`ZAIMANHUA_COOKIE`
-4. 值填写上一步复制的 Cookie（单账号）或 Cookie 字符串列表（多账号）
+4. 值填写上一步复制的 Cookie（多账号时按回车分隔，每行一个）
 
 示例：
 
@@ -94,8 +94,9 @@
 # 单账号
 ZAIMANHUA_COOKIE='your_cookie_here'
 
-# 多账号（JSON 字符串列表）
-ZAIMANHUA_COOKIE='["cookie_account_1","cookie_account_2"]'
+# 多账号（回车分隔）
+ZAIMANHUA_COOKIE='cookie_account_1
+cookie_account_2'
 ```
 
 ### 3. 安装依赖
@@ -127,12 +128,14 @@ pip3 install -r requirements.txt
 
 | 变量名 | 说明 |
 |------|------|
-| `ZAIMANHUA_COOKIE` | Cookie 字符串或 JSON 字符串列表 |
+| `ZAIMANHUA_COOKIE` | Cookie 字符串（多账号时按回车分隔） |
 
-多账号推荐值示例：
+多账号推荐值示例（每行一个 Cookie，代码内自动转为字符串列表）：
 
-```json
-["cookie_account_1","cookie_account_2","cookie_account_3"]
+```text
+cookie_account_1
+cookie_account_2
+cookie_account_3
 ```
 
 ### 2. 安装依赖
@@ -164,10 +167,12 @@ pip3 install -r requirements.txt
 
 ## 多账号配置
 
-如需多账号执行任务，只需配置一个环境变量 `ZAIMANHUA_COOKIE`，值为 JSON 字符串列表：
+如需多账号执行任务，只需配置一个环境变量 `ZAIMANHUA_COOKIE`，值按回车分隔（每行一个 Cookie）：
 
-```json
-["cookie_account_1","cookie_account_2","cookie_account_3"]
+```text
+cookie_account_1
+cookie_account_2
+cookie_account_3
 ```
 
 > 所有配置的账号会按列表顺序依次执行任务。
@@ -229,7 +234,7 @@ pip3 install -r requirements.txt
 2. 找到变量 `ZAIMANHUA_COOKIE`
 3. 编辑变量值：
    - 单账号：直接替换为新的 Cookie 字符串
-   - 多账号：更新 JSON 列表中对应账号的 Cookie
+   - 多账号：按行更新对应账号的 Cookie
 4. 保存更新
 
 ### 3. 验证更新
