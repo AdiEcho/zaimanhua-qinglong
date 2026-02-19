@@ -8,7 +8,13 @@ import time
 import os
 import requests
 
-from utils import extract_user_info_from_cookies, get_all_cookies, parse_cookies, validate_cookie
+from utils import (
+    extract_user_info_from_cookies,
+    get_all_cookies,
+    parse_cookies,
+    validate_cookie,
+    ensure_playwright_runtime,
+)
 from playwright.sync_api import sync_playwright
 
 # 配置
@@ -282,6 +288,9 @@ def run_lottery_api_only(token: str):
 def main():
     """主函数"""
     print("=== 抽奖任务自动化 ===\n")
+
+    if not ensure_playwright_runtime():
+        return False
 
     cookies_list = get_all_cookies()
     if not cookies_list:

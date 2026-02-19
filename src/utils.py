@@ -1,7 +1,9 @@
 """共享工具函数"""
 import os
 import json
+import subprocess
 import requests
+from pathlib import Path
 from urllib.parse import unquote
 from dotenv import load_dotenv
 
@@ -169,6 +171,29 @@ def get_all_cookies():
         cookies_list.append((label, cookie))
 
     return cookies_list
+
+
+def ensure_playwright_runtime():
+    """确保 Playwright 浏览器运行时已准备好（通过 .sh 脚本初始化）。"""
+    script_path = Path(__file__).resolve().parent.parent / "scripts" / "ensure_playwright.sh"
+    if not script_path.exists():
+        print(f"[ERROR] 未找到 Playwright 初始化脚本: {script_path}")
+        return False
+
+    try:
+        result = subprocess.run(["sh", str(script_path)], check=False)
+    except FileNotFoundError:
+        print("[ERROR] 系统缺少 sh，无法执行 Playwright 初始化脚本")
+        return False
+    except Exception as e:
+        print(f"[ERROR] 执行 Playwright 初始化脚本异常: {e}")
+        return False
+
+    if result.returncode != 0:
+        print(f"[ERROR] Playwright 初始化失败，退出码: {result.returncode}")
+        return False
+
+    return True
 
 
 def parse_cookies(cookie_str):

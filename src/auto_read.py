@@ -8,7 +8,15 @@ import requests
 import json
 import argparse
 from playwright.sync_api import sync_playwright
-from utils import get_all_cookies, extract_user_info_from_cookies, print_task_status, claim_task_reward, claim_rewards, create_browser_context
+from utils import (
+    get_all_cookies,
+    extract_user_info_from_cookies,
+    print_task_status,
+    claim_task_reward,
+    claim_rewards,
+    create_browser_context,
+    ensure_playwright_runtime,
+)
 
 # Configuration
 API_BASE = "https://v4api.zaimanhua.com/app/v1"
@@ -185,6 +193,9 @@ def try_ui_claim(cookie_str):
             browser.close()
 
 def run_auto_read():
+    if not ensure_playwright_runtime():
+        return False
+
     parser = argparse.ArgumentParser(description='Zaimanhua Auto Read Script')
     parser.add_argument('--max-minutes', type=int, default=30, help='最大阅读时长（分钟）')
     parser.add_argument('--debug', action='store_true', help='开启调试日志')

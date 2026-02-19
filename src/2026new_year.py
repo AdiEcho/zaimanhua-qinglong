@@ -19,6 +19,7 @@ from utils import (
     get_all_cookies,
     parse_cookies,
     validate_cookie,
+    ensure_playwright_runtime,
 )
 from playwright.sync_api import sync_playwright
 
@@ -312,6 +313,9 @@ def run_new_year(cookie_str: str, account_name: str):
 def main():
     """主函数"""
     print("=== 2026 马年春节活动自动化 ===\n")
+
+    if not ensure_playwright_runtime():
+        return False
 
     cookies_list = get_all_cookies()
     if not cookies_list:

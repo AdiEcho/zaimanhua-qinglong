@@ -10,6 +10,7 @@ from utils import (
     get_task_list,
     extract_tasks_from_response,
     get_all_cookies,
+    ensure_playwright_runtime,
 )
 
 # 配置
@@ -215,6 +216,9 @@ def checkin(cookie_str):
 
 def main():
     """主函数，支持多账号签到"""
+    if not ensure_playwright_runtime():
+        return False
+
     cookies_list = get_all_cookies()
 
     if not cookies_list:

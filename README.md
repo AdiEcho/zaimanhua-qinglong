@@ -105,6 +105,13 @@ cookie_account_2'
 pip3 install -r requirements.txt
 ```
 
+首次执行任务时，脚本会自动调用 `scripts/ensure_playwright.sh` 安装 Playwright Chromium。  
+如需手动提前初始化，可执行：
+
+```bash
+sh scripts/ensure_playwright.sh
+```
+
 ### 4. 配置订阅并开启自动添加任务
 
 1. 在青龙中添加本仓库订阅

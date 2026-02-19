@@ -9,6 +9,7 @@ import random
 from playwright.sync_api import sync_playwright
 from utils import (
     get_all_cookies,
+    ensure_playwright_runtime,
     create_browser_context,
     claim_rewards,
     init_localstorage,
@@ -341,6 +342,9 @@ def run_comment(cookie_str):
 
 def main():
     """主函数，支持多账号"""
+    if not ensure_playwright_runtime():
+        return False
+
     cookies_list = get_all_cookies()
 
     if not cookies_list:

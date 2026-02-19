@@ -14,7 +14,12 @@ import os
 import re
 import time
 
-from utils import extract_user_info_from_cookies, get_all_cookies, parse_cookies
+from utils import (
+    extract_user_info_from_cookies,
+    get_all_cookies,
+    parse_cookies,
+    ensure_playwright_runtime,
+)
 from playwright.sync_api import sync_playwright
 
 # 配置
@@ -276,6 +281,9 @@ def main():
     print("=== 四周年活动自动化 ===")
     print(f"活动地址: {ACTIVITY_URL}")
     print(f"活动时间: 2026.1.16 - 2026.1.22\n")
+
+    if not ensure_playwright_runtime():
+        return
 
     cookies_list = get_all_cookies()
     if not cookies_list:
