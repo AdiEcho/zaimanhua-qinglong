@@ -112,6 +112,14 @@ pip3 install -r requirements.txt
 sh scripts/ensure_playwright.sh
 ```
 
+如果日志出现以下错误（例如：`error while loading shared libraries: libnspr4.so`），说明系统缺少 Playwright 运行库，可在青龙容器内执行：
+
+```bash
+python3 -m playwright install --with-deps chromium
+```
+
+如果环境没有 `python3`，可将命令中的 `python3` 替换为 `python`。
+
 ### 4. 配置订阅并开启自动添加任务
 
 1. 在青龙中添加本仓库订阅
