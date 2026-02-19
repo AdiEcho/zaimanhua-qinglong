@@ -1,3 +1,7 @@
+# cron: 30 9 * * *
+# cron "30 9 * * *"
+# new Env('再漫画_每日评论')
+
 """每日评论自动化"""
 import os
 import time
@@ -341,7 +345,7 @@ def main():
 
     if not cookies_list:
         print("Error: 未配置任何账号 Cookie")
-        print("请设置 ZAIMANHUA_COOKIE 或 ZAIMANHUA_COOKIE_1 等环境变量")
+        print("请设置 ZAIMANHUA_COOKIE 环境变量（支持单个 Cookie 或字符串列表）")
         return False
 
     print(f"共发现 {len(cookies_list)} 个账号")

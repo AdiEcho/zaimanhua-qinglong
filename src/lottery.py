@@ -1,3 +1,7 @@
+# cron: 0 11 * * *
+# cron "0 11 * * *"
+# new Env('再漫画_每日抽奖')
+
 """抽奖自动化模块"""
 import hashlib
 import time
@@ -281,7 +285,7 @@ def main():
 
     cookies_list = get_all_cookies()
     if not cookies_list:
-        print("错误: 请设置 ZAIMANHUA_COOKIE 环境变量")
+        print("错误: 请设置 ZAIMANHUA_COOKIE 环境变量（支持单个 Cookie 或字符串列表）")
         return False
 
     all_success = True

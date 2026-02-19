@@ -1,53 +1,22 @@
-import os
+# cron: 0 8 * * *
+# cron "0 8 * * *"
+# new Env('再漫画_每日签到')
+
 import time
 from playwright.sync_api import sync_playwright
-from dotenv import load_dotenv
-from utils import extract_user_info_from_cookies, claim_task_reward, get_task_list, extract_tasks_from_response
+from utils import (
+    extract_user_info_from_cookies,
+    claim_task_reward,
+    get_task_list,
+    extract_tasks_from_response,
+    get_all_cookies,
+)
 
 # 配置
 MAX_RETRIES = 5
 PAGE_TIMEOUT = 60000  # 60秒
 CHECKIN_TASK_ID = 8  # "到此一游"签到任务
 VIP_TASK_ID = 16     # "VIP福利"每日领取任务
-
-
-def _make_account_label(default_label, cookie_str):
-    """从 Cookie 中提取用户名，生成带用户名的账号标签"""
-    try:
-        user_info = extract_user_info_from_cookies(cookie_str)
-        if isinstance(user_info, dict):
-            name = user_info.get('nickname') or user_info.get('username')
-            if name:
-                return f"{default_label} ({name})"
-    except Exception:
-        pass
-    return default_label
-
-
-def get_all_cookies():
-    """获取所有账号的 Cookie"""
-    load_dotenv()  # 自动加载 .env 文件（本地测试用）
-
-    cookies_list = []
-
-    # 兼容单账号配置
-    single = os.environ.get('ZAIMANHUA_COOKIE')
-    if single:
-        label = _make_account_label('默认账号', single)
-        cookies_list.append((label, single))
-
-    # 支持多账号配置 ZAIMANHUA_COOKIE_1, _2, _3...
-    i = 1
-    while True:
-        cookie = os.environ.get(f'ZAIMANHUA_COOKIE_{i}')
-        if cookie:
-            label = _make_account_label(f'账号 {i}', cookie)
-            cookies_list.append((label, cookie))
-            i += 1
-        else:
-            break
-
-    return cookies_list
 
 
 def parse_cookies(cookie_str):
@@ -250,7 +219,7 @@ def main():
 
     if not cookies_list:
         print("Error: 未配置任何账号 Cookie")
-        print("请设置 ZAIMANHUA_COOKIE 或 ZAIMANHUA_COOKIE_1, ZAIMANHUA_COOKIE_2 等环境变量")
+        print("请设置 ZAIMANHUA_COOKIE 环境变量（支持单个 Cookie 或字符串列表）")
         return False
 
     print(f"共发现 {len(cookies_list)} 个账号")

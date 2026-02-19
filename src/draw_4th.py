@@ -1,3 +1,7 @@
+# cron: */20 5-23 * * *
+# cron "*/20 5-23 * * *"
+# new Env('再漫画_四周年活动')
+
 """四周年活动自动化模块
 
 活动地址: https://activity.zaimanhua.com/draw-4th/
@@ -275,7 +279,7 @@ def main():
 
     cookies_list = get_all_cookies()
     if not cookies_list:
-        print("错误: 请设置 ZAIMANHUA_COOKIE 环境变量")
+        print("错误: 请设置 ZAIMANHUA_COOKIE 环境变量（支持单个 Cookie 或字符串列表）")
         return
 
     print(f"检测到 {len(cookies_list)} 个账号")

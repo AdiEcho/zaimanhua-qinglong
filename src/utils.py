@@ -114,6 +114,42 @@ def _make_account_label(default_label, cookie_str):
     return default_label
 
 
+def _parse_cookie_entries(raw_value):
+    """解析 ZAIMANHUA_COOKIE 的值为 Cookie 列表。
+
+    支持格式：
+    1. 单个 Cookie 字符串
+    2. JSON 字符串列表，例如:
+       ["cookie_a", "cookie_b"]
+    3. 按行分隔的多条 Cookie
+    """
+    if not raw_value:
+        return []
+
+    value = raw_value.strip()
+    if not value:
+        return []
+
+    # 优先尝试 JSON 解析（推荐格式）
+    try:
+        parsed = json.loads(value)
+        if isinstance(parsed, list):
+            return [item.strip() for item in parsed if isinstance(item, str) and item.strip()]
+        if isinstance(parsed, str) and parsed.strip():
+            return [parsed.strip()]
+    except Exception:
+        pass
+
+    # 兼容按行分隔
+    if '\n' in value or '\r' in value:
+        items = [line.strip() for line in value.splitlines() if line.strip()]
+        if items:
+            return items
+
+    # 回退：按单个 Cookie 处理
+    return [value]
+
+
 def validate_cookie(cookie_str):
     """验证 Cookie 是否有效，返回 (is_valid, error_msg)"""
     user_info = extract_user_info_from_cookies(cookie_str)
@@ -133,23 +169,23 @@ def validate_cookie(cookie_str):
 
 
 def get_all_cookies():
-    """获取所有账号的 Cookie"""
+    """获取所有账号的 Cookie。
+
+    使用 ZAIMANHUA_COOKIE：
+    - 单个 Cookie 字符串
+    - JSON 字符串列表
+    - 按行分隔的多条 Cookie
+    """
     load_dotenv()  # 自动加载 .env 文件（本地测试用）
 
+    primary = os.environ.get('ZAIMANHUA_COOKIE')
+    parsed_primary = _parse_cookie_entries(primary)
     cookies_list = []
-    single = os.environ.get('ZAIMANHUA_COOKIE')
-    if single:
-        label = _make_account_label('默认账号', single)
-        cookies_list.append((label, single))
-    i = 1
-    while True:
-        cookie = os.environ.get(f'ZAIMANHUA_COOKIE_{i}')
-        if cookie:
-            label = _make_account_label(f'账号 {i}', cookie)
-            cookies_list.append((label, cookie))
-            i += 1
-        else:
-            break
+    for idx, cookie in enumerate(parsed_primary):
+        base_label = '默认账号' if idx == 0 else f'账号 {idx}'
+        label = _make_account_label(base_label, cookie)
+        cookies_list.append((label, cookie))
+
     return cookies_list
 
 

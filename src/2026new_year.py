@@ -1,9 +1,13 @@
+# cron: */15 8-23 * * *
+# cron "*/15 8-23 * * *"
+# new Env('再漫画_2026新年活动')
+
 """2026 马年春节活动自动化模块
 
 活动页面: https://activity.zaimanhua.com/newYear/
 活动时间: 2/15-2/23 每天 10:00-24:00
 每次执行: 完成任务 → 发一条祝福 → 用完所有抽奖次数
-通过 GitHub Actions 每 15 分钟触发一次，覆盖 8:00-23:00
+通过 cron 每 15 分钟触发一次，覆盖 8:00-23:00
 """
 import hashlib
 import random
@@ -311,7 +315,7 @@ def main():
 
     cookies_list = get_all_cookies()
     if not cookies_list:
-        print("错误: 请设置 ZAIMANHUA_COOKIE 环境变量")
+        print("错误: 请设置 ZAIMANHUA_COOKIE 环境变量（支持单个 Cookie 或字符串列表）")
         return False
 
     all_success = True

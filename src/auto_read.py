@@ -1,3 +1,7 @@
+# cron: 0 10 * * *
+# cron "0 10 * * *"
+# new Env('再漫画_每日阅读')
+
 import time
 import random
 import requests

@@ -1,6 +1,6 @@
 # Zaimanhua Auto Check-in
 
-基于 GitHub Actions 的再漫画 (zaimanhua.com) 每日任务自动化工具。
+基于青龙面板的再漫画 (zaimanhua.com) 每日任务自动化工具。
 
 ## 功能特性
 
@@ -15,9 +15,9 @@
 | 积分领取 | 任务完成后自动领取积分 | 随任务执行 |
 
 其他特性：
-- 支持多账号（最多 5 个）
+- 支持多账号
 - 日志显示账号真实用户名，便于识别
-- Cookie 失效自动检测，workflow 失败触发邮件通知
+- Cookie 失效自动检测并给出更新提示
 - 所有任务支持手动触发
 - 智能跳过无效/付费章节
 - 避免重复评论同一漫画
@@ -43,7 +43,7 @@
 >
 > **触发频率：** 北京时间 5:00-23:00，每 20 分钟触发一次
 >
-> **注意：** 活动结束后可禁用或删除 `draw_4th.yml` workflow
+> **注意：** 活动结束后可在青龙中禁用或删除对应任务
 
 ### 新年活动说明
 
@@ -59,7 +59,7 @@
 >
 > **触发频率：** 北京时间 8:00-23:00，每 15 分钟触发一次
 >
-> **注意：** 活动结束后可禁用或删除 `2026new_year.yml` workflow
+> **注意：** 活动结束后可在青龙中禁用或删除对应任务
 
 ### 每日评论功能说明
 
@@ -68,13 +68,9 @@
 > 未绑定手机号的账号可以"发送"评论（前端不阻止），但评论不会真正发布到评论区，任务也不会完成。
 > 如果发现评论任务一直失败，请检查账号是否已绑定手机号。
 
-## 快速开始
+## 快速开始（青龙）
 
-### 1. Fork 本仓库
-
-点击右上角的 **Fork** 按钮，将仓库复制到你的账号下。
-
-### 2. 获取 Cookie
+### 1. 获取 Cookie
 
 1. 在浏览器中登录 https://i.zaimanhua.com/
 2. 按 **F12** 打开开发者工具
@@ -85,47 +81,96 @@
    ```
 5. 复制输出的整个字符串（去掉首尾引号）
 
-### 3. 配置 GitHub Secret
+### 2. 配置青龙环境变量
 
-1. 进入你 Fork 的仓库
-2. 点击 **Settings** → **Secrets and variables** → **Actions**
-3. 点击 **New repository secret**
-4. Name 填写：`ZAIMANHUA_COOKIE`
-5. Value 填写：上一步复制的 Cookie 字符串
-6. 点击 **Add secret**
+1. 打开青龙面板
+2. 进入 **环境变量**
+3. 新建变量：`ZAIMANHUA_COOKIE`
+4. 值填写上一步复制的 Cookie（单账号）或 Cookie 字符串列表（多账号）
 
-### 4. 启用 Actions
+示例：
 
-1. 进入仓库的 **Actions** 标签
-2. 如果看到提示，点击 **I understand my workflows, go ahead and enable them**
-3. 任务将按计划自动运行
+```bash
+# 单账号
+ZAIMANHUA_COOKIE='your_cookie_here'
+
+# 多账号（JSON 字符串列表）
+ZAIMANHUA_COOKIE='["cookie_account_1","cookie_account_2"]'
+```
+
+### 3. 安装依赖
+
+```bash
+pip3 install -r requirements.txt
+```
+
+### 4. 配置订阅并开启自动添加任务
+
+1. 在青龙中添加本仓库订阅
+2. 开启 **自动添加任务（autoAddCron）**
+3. 拉库后自动生成任务
 
 ### 5. 手动测试
 
-1. 进入 **Actions** 标签
-2. 在左侧选择要测试的 workflow：
-   - **Zaimanhua Auto Check-in** - 签到
-   - **Daily Comment** - 评论
-   - **Daily Watch** - 阅读
-   - **Daily Lottery** - 抽奖
-   - **New Year Activity** - 新年活动
-3. 点击 **Run workflow** → 选择分支 → **Run workflow**
-4. 查看运行日志确认任务成功
+1. 进入青龙 **定时任务**
+2. 先手动执行 `再漫画_每日签到`
+3. 查看任务日志确认运行成功
+
+## 青龙面板拉库（自动添加任务）
+
+本仓库的任务脚本已添加青龙可识别的任务头（`cron:` + `new Env(...)`）。  
+在订阅配置中开启 **自动添加任务（autoAddCron）** 后，拉库会自动创建对应定时任务。
+
+### 1. 配置环境变量
+
+在青龙 `环境变量` 中添加：
+
+| 变量名 | 说明 |
+|------|------|
+| `ZAIMANHUA_COOKIE` | Cookie 字符串或 JSON 字符串列表 |
+
+多账号推荐值示例：
+
+```json
+["cookie_account_1","cookie_account_2","cookie_account_3"]
+```
+
+### 2. 安装依赖
+
+```bash
+pip3 install -r requirements.txt
+```
+
+### 3. 订阅配置建议
+
+- 订阅地址：你的仓库地址（例如 `https://github.com/<你的用户名>/zaimanhua-qinglong.git`）
+- 分支：`main`
+- 文件类型/后缀：包含 `py`
+- 白名单（可选）：`src/`
+- 开启：`自动添加任务（autoAddCron）`
+
+### 4. 自动创建任务清单（默认北京时间）
+
+| 任务名 | Cron | 脚本 |
+|------|------|------|
+| 再漫画_每日签到 | `0 8 * * *` | `src/checkin.py` |
+| 再漫画_每日评论 | `30 9 * * *` | `src/comment.py` |
+| 再漫画_每日阅读 | `0 10 * * *` | `src/auto_read.py` |
+| 再漫画_每日抽奖 | `0 11 * * *` | `src/lottery.py` |
+| 再漫画_四周年活动 | `*/20 5-23 * * *` | `src/draw_4th.py` |
+| 再漫画_2026新年活动 | `*/15 8-23 * * *` | `src/2026new_year.py` |
+
+> 活动类任务在活动结束后可直接在青龙中禁用或删除。
 
 ## 多账号配置
 
-如需为多个账号执行任务，添加多个 Secret：
+如需多账号执行任务，只需配置一个环境变量 `ZAIMANHUA_COOKIE`，值为 JSON 字符串列表：
 
-| Secret 名称 | 说明 |
-|------------|------|
-| `ZAIMANHUA_COOKIE` | 默认账号 |
-| `ZAIMANHUA_COOKIE_1` | 账号 1 |
-| `ZAIMANHUA_COOKIE_2` | 账号 2 |
-| `ZAIMANHUA_COOKIE_3` | 账号 3 |
-| `ZAIMANHUA_COOKIE_4` | 账号 4 |
-| `ZAIMANHUA_COOKIE_5` | 账号 5 |
+```json
+["cookie_account_1","cookie_account_2","cookie_account_3"]
+```
 
-> 所有配置的账号都会依次执行任务。
+> 所有配置的账号会按列表顺序依次执行任务。
 
 ## 项目结构
 
@@ -138,19 +183,12 @@
 │   ├── draw_4th.py     # 四周年活动脚本
 │   ├── 2026new_year.py # 新年活动脚本
 │   └── utils.py        # 共享工具函数
-├── .github/workflows/
-│   ├── checkin.yml     # 签到 workflow
-│   ├── comment.yml     # 评论 workflow
-│   ├── watch.yml       # 阅读 workflow
-│   ├── lottery.yml     # 抽奖 workflow
-│   ├── draw_4th.yml    # 四周年活动 workflow
-│   └── 2026new_year.yml # 新年活动 workflow
 └── requirements.txt    # Python 依赖
 ```
 
 ## 任务时间表
 
-| Workflow | UTC 时间 | 北京时间 |
+| 任务 | UTC 时间 | 北京时间 |
 |----------|---------|---------|
 | 签到 | 00:00 | 08:00 |
 | 评论 | 01:30 | 09:30 |
@@ -161,21 +199,18 @@
 
 ## 注意事项
 
-- **Cookie 有效期**：Cookie 可能会过期，失效时 workflow 会自动失败并触发邮件通知，届时请按下方步骤更新
-- **GitHub Actions 限制**：免费账户每月 2000 分钟，阅读任务约需 15 分钟/次
-- **GitHub 通知设置**：确保在 GitHub Settings > Notifications 中开启 Actions 失败通知
-- **隐私安全**：Cookie 存储在 GitHub Secrets 中，不会公开显示
+- **Cookie 有效期**：Cookie 可能会过期，失效时任务会报错，届时请按下方步骤更新
+- **执行时长**：阅读任务耗时较长，建议错峰运行或按需调整 cron
+- **隐私安全**：Cookie 属于敏感信息，请仅保存在青龙环境变量中
 
 ## Cookie 过期更新
 
-当 Cookie 失效时，workflow 运行日志会显示如下错误：
+当 Cookie 失效时，任务运行日志会显示如下错误：
 
 ```
 [ERROR] Cookie 无效: API 返回错误: 用户未登录
 请更新 默认账号 (张三) 的 Cookie
 ```
-
-同时 GitHub Actions 会因非零退出码触发失败通知邮件。收到通知后，按以下步骤更新：
 
 ### 1. 重新获取 Cookie
 
@@ -188,23 +223,20 @@
    ```
 5. 复制输出的整个字符串（去掉首尾引号）
 
-### 2. 更新 GitHub Secret
+### 2. 更新青龙环境变量
 
-1. 进入你 Fork 的仓库
-2. 点击 **Settings** → **Secrets and variables** → **Actions**
-3. 找到需要更新的 Secret（根据日志中提示的账号名称对应）：
-   - `ZAIMANHUA_COOKIE` — 默认账号
-   - `ZAIMANHUA_COOKIE_1` — 账号 1
-   - 以此类推...
-4. 点击该 Secret 右侧的 **编辑（铅笔图标）**
-5. 在 Value 中粘贴新的 Cookie 字符串
-6. 点击 **Update secret**
+1. 打开青龙面板，进入 **环境变量**
+2. 找到变量 `ZAIMANHUA_COOKIE`
+3. 编辑变量值：
+   - 单账号：直接替换为新的 Cookie 字符串
+   - 多账号：更新 JSON 列表中对应账号的 Cookie
+4. 保存更新
 
 ### 3. 验证更新
 
-1. 进入 **Actions** 标签
-2. 选择任意 workflow，点击 **Run workflow** 手动触发
-3. 查看运行日志，确认不再出现 Cookie 无效的错误
+1. 进入青龙 **定时任务**
+2. 手动执行任意再漫画任务
+3. 查看运行日志，确认不再出现 Cookie 无效错误
 
 > **提示**：日志中会显示账号的真实用户名（如 `默认账号 (张三)`），方便快速定位需要更新的账号。
 
@@ -212,7 +244,7 @@
 
 - Python 3.11
 - Playwright（浏览器自动化）
-- GitHub Actions（定时任务）
+- 青龙面板（定时任务）
 
 ## 免责声明
 
